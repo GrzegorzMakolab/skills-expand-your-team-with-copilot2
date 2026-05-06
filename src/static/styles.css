@@ -183,13 +183,6 @@ section h3 {
   line-height: 1.4;
 }
 
-.activity-card-actions {
-  margin-top: auto;
-  padding-top: 10px;
-  display: flex;
-  justify-content: center;
-}
-
 /* Activity Tag */
 .activity-tag {
   position: absolute;
@@ -474,6 +467,103 @@ footer {
   padding: 10px;
   color: var(--text-secondary);
   font-size: 0.8rem;
+}
+
+/* Share button */
+.share-button {
+  background-color: var(--background);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.share-button:hover {
+  background-color: var(--border);
+}
+
+/* Activity card actions – space out share and register buttons */
+.activity-card-actions {
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Share modal */
+.share-menu-content h3 {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.share-activity-name {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-align: center;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.share-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+  color: white;
+  border: none;
+}
+
+.share-option:hover {
+  opacity: 0.85;
+}
+
+#copy-link-btn {
+  background-color: var(--primary);
+}
+
+#twitter-share-btn {
+  background-color: #000000;
+}
+
+#facebook-share-btn {
+  background-color: #1877f2;
+}
+
+#whatsapp-share-btn {
+  background-color: #25d366;
+}
+
+.close-share-menu {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  line-height: 1;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 /* Search and Filter Components - Updated for Sidebar */

@@ -553,6 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </ul>
       </div>
       <div class="activity-card-actions">
+        <button class="share-button" data-activity="${name}">📤 Share</button>
         ${
           currentUser
             ? `
@@ -586,6 +587,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handler for share button
+    const shareButton = activityCard.querySelector(".share-button");
+    shareButton.addEventListener("click", () => {
+      shareActivity(name, details);
+    });
 
     activitiesList.appendChild(activityCard);
   }
@@ -797,6 +804,117 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     );
+  }
+
+  // Share activity using Web Share API or fallback modal
+  function shareActivity(name, details) {
+    const formattedSchedule = formatSchedule(details);
+    const shareText = `Check out "${name}" at Mergington High School! ${details.description} | Schedule: ${formattedSchedule}`;
+    const shareUrl =
+      window.location.origin +
+      window.location.pathname +
+      "?activity=" +
+      encodeURIComponent(name);
+
+    if (navigator.share) {
+      navigator
+        .share({ title: name, text: shareText, url: shareUrl })
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            console.error("Error sharing:", err);
+          }
+        });
+    } else {
+      showShareMenu(name, shareText, shareUrl);
+    }
+  }
+
+  // Show a share modal with platform links
+  function showShareMenu(name, shareText, shareUrl) {
+    let shareMenu = document.getElementById("share-menu");
+    if (!shareMenu) {
+      shareMenu = document.createElement("div");
+      shareMenu.id = "share-menu";
+      shareMenu.className = "modal hidden";
+      shareMenu.innerHTML = `
+        <div class="modal-content share-menu-content">
+          <span class="close-share-menu">&times;</span>
+          <h3>Share Activity</h3>
+          <p class="share-activity-name"></p>
+          <div class="share-options">
+            <button class="share-option" id="copy-link-btn">🔗 Copy Link</button>
+            <a class="share-option" id="twitter-share-btn" target="_blank" rel="noopener noreferrer">𝕏 X (formerly Twitter)</a>
+            <a class="share-option" id="facebook-share-btn" target="_blank" rel="noopener noreferrer">📘 Facebook</a>
+            <a class="share-option" id="whatsapp-share-btn" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(shareMenu);
+
+      shareMenu.querySelector(".close-share-menu").addEventListener("click", closeShareMenu);
+      shareMenu.addEventListener("click", (e) => {
+        if (e.target === shareMenu) closeShareMenu();
+      });
+    }
+
+    // Update activity name label
+    shareMenu.querySelector(".share-activity-name").textContent = name;
+
+    // Update share links
+    const encodedText = encodeURIComponent(shareText);
+    const encodedUrl = encodeURIComponent(shareUrl);
+    shareMenu.querySelector("#twitter-share-btn").href =
+      `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+    shareMenu.querySelector("#facebook-share-btn").href =
+      `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+    shareMenu.querySelector("#whatsapp-share-btn").href =
+      `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
+
+    // Re-bind copy link button each time to capture the current shareUrl
+    const copyBtn = shareMenu.querySelector("#copy-link-btn");
+    const newCopyBtn = copyBtn.cloneNode(true);
+    copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
+    newCopyBtn.addEventListener("click", () => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showMessage("Link copied to clipboard!", "success");
+          closeShareMenu();
+        }).catch((err) => {
+          console.error("Clipboard API failed, using fallback:", err);
+          copyToClipboardFallback(shareUrl);
+        });
+      } else {
+        copyToClipboardFallback(shareUrl);
+      }
+    });
+
+    shareMenu.classList.remove("hidden");
+    setTimeout(() => shareMenu.classList.add("show"), 10);
+  }
+
+  // Clipboard fallback for older browsers
+  function copyToClipboardFallback(text) {
+    const input = document.createElement("input");
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    const success = document.execCommand("copy");
+    document.body.removeChild(input);
+    if (success) {
+      showMessage("Link copied to clipboard!", "success");
+    } else {
+      showMessage("Could not copy link. Please copy it manually.", "error");
+    }
+    closeShareMenu();
+  }
+
+  // Close the share menu
+  function closeShareMenu() {
+    const shareMenu = document.getElementById("share-menu");
+    if (shareMenu) {
+      shareMenu.classList.remove("show");
+      setTimeout(() => shareMenu.classList.add("hidden"), 300);
+    }
   }
 
   // Show message function
