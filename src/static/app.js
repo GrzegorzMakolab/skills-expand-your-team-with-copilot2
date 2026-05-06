@@ -979,6 +979,37 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeRangeFilter,
   };
 
+  // Dark mode toggle
+  const darkModeToggle = document.getElementById("dark-mode-toggle");
+  const darkModeIcon = document.getElementById("dark-mode-icon");
+  const darkModeLabel = document.getElementById("dark-mode-label");
+
+  function applyTheme(isDark) {
+    if (isDark) {
+      document.documentElement.setAttribute("data-theme", "dark");
+      if (darkModeIcon) darkModeIcon.textContent = "☀️";
+      if (darkModeLabel) darkModeLabel.textContent = "Light";
+      if (darkModeToggle) darkModeToggle.setAttribute("aria-pressed", "true");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      if (darkModeIcon) darkModeIcon.textContent = "🌙";
+      if (darkModeLabel) darkModeLabel.textContent = "Dark";
+      if (darkModeToggle) darkModeToggle.setAttribute("aria-pressed", "false");
+    }
+  }
+
+  // Load saved preference
+  const savedTheme = localStorage.getItem("theme");
+  applyTheme(savedTheme === "dark");
+
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      applyTheme(!isDark);
+      localStorage.setItem("theme", !isDark ? "dark" : "light");
+    });
+  }
+
   // Initialize app
   checkAuthentication();
   initializeFilters();
