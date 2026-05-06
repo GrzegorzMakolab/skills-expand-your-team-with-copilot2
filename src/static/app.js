@@ -861,6 +861,33 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeRangeFilter,
   };
 
+  // Dark mode toggle
+  const darkModeToggle = document.getElementById("dark-mode-toggle");
+  const darkModeIcon = document.getElementById("dark-mode-icon");
+  const darkModeLabel = document.getElementById("dark-mode-label");
+
+  function applyTheme(isDark) {
+    if (isDark) {
+      document.documentElement.setAttribute("data-theme", "dark");
+      darkModeIcon.textContent = "☀️";
+      darkModeLabel.textContent = "Light";
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      darkModeIcon.textContent = "🌙";
+      darkModeLabel.textContent = "Dark";
+    }
+  }
+
+  // Load saved preference
+  const savedTheme = localStorage.getItem("theme");
+  applyTheme(savedTheme === "dark");
+
+  darkModeToggle.addEventListener("click", () => {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    applyTheme(!isDark);
+    localStorage.setItem("theme", !isDark ? "dark" : "light");
+  });
+
   // Initialize app
   checkAuthentication();
   initializeFilters();
