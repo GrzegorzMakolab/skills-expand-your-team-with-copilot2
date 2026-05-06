@@ -869,12 +869,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function applyTheme(isDark) {
     if (isDark) {
       document.documentElement.setAttribute("data-theme", "dark");
-      darkModeIcon.textContent = "☀️";
-      darkModeLabel.textContent = "Light";
+      if (darkModeIcon) darkModeIcon.textContent = "☀️";
+      if (darkModeLabel) darkModeLabel.textContent = "Light";
+      if (darkModeToggle) darkModeToggle.setAttribute("aria-pressed", "true");
     } else {
       document.documentElement.removeAttribute("data-theme");
-      darkModeIcon.textContent = "🌙";
-      darkModeLabel.textContent = "Dark";
+      if (darkModeIcon) darkModeIcon.textContent = "🌙";
+      if (darkModeLabel) darkModeLabel.textContent = "Dark";
+      if (darkModeToggle) darkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
 
@@ -882,11 +884,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedTheme = localStorage.getItem("theme");
   applyTheme(savedTheme === "dark");
 
-  darkModeToggle.addEventListener("click", () => {
-    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-    applyTheme(!isDark);
-    localStorage.setItem("theme", !isDark ? "dark" : "light");
-  });
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      applyTheme(!isDark);
+      localStorage.setItem("theme", !isDark ? "dark" : "light");
+    });
+  }
 
   // Initialize app
   checkAuthentication();
